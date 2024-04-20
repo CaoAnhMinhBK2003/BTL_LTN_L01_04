@@ -60,7 +60,8 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	value = HAL_ADC_GetValue(&hadc1); //CODE LM35
-	temp = value * 0.08;} //CODE LM35
+	temp = value * 0.08;} //CODE LM35 ĐẾN ĐÂY LÀ HẾT
+uint16_t readValue; //CODE LM393
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -101,6 +102,7 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 HAL_ADC_Start(&hadc1);//CODE LM35
+HAL_ADC_Start(&hadc1);//CODE LM393
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,6 +112,30 @@ HAL_ADC_Start(&hadc1);//CODE LM35
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 1);
+    HAL_Delay(20);
+    HAL_ADC_PollForConversion(&hadc1,1000);
+    readValue = HAL_ADC_GetValue(&hadc1);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 0);
+    if (readValue > 3200)
+    {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 0);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+    }
+    else if (readValue > 2700 )
+    {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 1);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 0);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
+    }
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
